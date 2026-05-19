@@ -35,7 +35,9 @@ export class SeededRandom {
    * @returns Random number in [0, 1).
    */
   next(): number {
-    let t = (this.seed += 0x6d2b79f5);
+    // Keep seed strictly within 32-bit integer bounds to prevent float
+    // overflow over long sequences.
+    let t = (this.seed = (this.seed + 0x6d2b79f5) | 0);
 
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -92,11 +94,21 @@ export function secureRandomElement<T>(array: readonly T[]): T {
  * @returns Random integer in [min, max).
  */
 export function secureRandomInt(min: number, max: number): number {
+  // Validate that inputs are safe integers to prevent precision loss or unexpected behavior.
+  if (!Number.isSafeInteger(min) || !Number.isSafeInteger(max)) {
+    throw new Error("min and max must be safe integers");
+  }
   if (min >= max) {
     throw new Error("max must be greater than min");
   }
 
   const range = max - min;
+
+  // Limit range to 48-bit integer to prevent readUIntBE overflow (max 6 bytes).
+  if (range > 281474976710656) {
+    throw new Error("Range exceeds maximum supported 48-bit integer size");
+  }
+
   const bytesNeeded = Math.ceil(Math.log2(range) / 8) || 1;
   const maxValid = Math.floor((256 ** bytesNeeded) / range) * range;
 

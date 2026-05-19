@@ -29,6 +29,19 @@ describe("secureRandomInt", () => {
     expect(() => secureRandomInt(10, 5)).toThrow("max must be greater than min");
   });
 
+  it("should throw when min or max are not safe integers", () => {
+    expect(() => secureRandomInt(0.5, 10)).toThrow("min and max must be safe integers");
+    expect(() => secureRandomInt(0, Number.MAX_SAFE_INTEGER + 1)).toThrow(
+      "min and max must be safe integers",
+    );
+  });
+
+  it("should throw when range exceeds 48-bit integer size", () => {
+    expect(() => secureRandomInt(0, 281474976710657)).toThrow(
+      "Range exceeds maximum supported 48-bit integer size",
+    );
+  });
+
   it("should handle small ranges", () => {
     for (let i = 0; i < 50; i++) {
       const result = secureRandomInt(0, 2);

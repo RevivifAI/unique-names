@@ -1,12 +1,10 @@
-import * as crypto from "node:crypto";
-
 /**
  * Core name generator implementation.
  */
 import type { TokenOptions, UniqueNameOptions } from "./types.js";
 
 import { adjectives, nouns } from "./dictionaries/index.js";
-import { secureRandomElement, SeededRandom } from "./utils/random.js";
+import { secureRandomElement, secureRandomInt, SeededRandom } from "./utils/random.js";
 
 const HEX_CHARS = "0123456789abcdef";
 const NUMERIC_CHARS = "0123456789";
@@ -161,18 +159,13 @@ function generateToken(options: TokenOptions, random: null | SeededRandom): stri
       token = `${token}${charSet[index]}`;
     }
   } else {
-    // Use secure random
+    // Use secure random.
+    // We use secureRandomInt to avoid modulo bias when charSet.length
+    // does not divide 256.
     for (let i = 0; i < length; i++) {
-      const buffer = crypto.randomBytes(1);
-      const byteValue = buffer[0];
+      const index = secureRandomInt(0, charSet.length);
 
-      if (byteValue === undefined) {
-        throw new Error("Failed to generate random bytes");
-      }
-
-      const index = byteValue % charSet.length;
-
-      // eslint-disable-next-line security/detect-object-injection -- index bounded via modulo
+      // eslint-disable-next-line security/detect-object-injection -- bounded index
       token = `${token}${charSet[index]}`;
     }
   }
