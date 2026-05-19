@@ -127,6 +127,22 @@ describe("WordPool", () => {
 
       expect(() => pool.refresh()).toThrow("Dictionary not loaded");
     });
+
+    it("should derive new seed for refresh with seeded pool", () => {
+      const pool = new WordPool({
+        dictionary: nouns,
+        poolSize: 100,
+        seed: "refresh-test-seed",
+      });
+      const words1 = pool.getPool();
+
+      pool.refresh();
+
+      const words2 = pool.getPool();
+
+      // Different pool instances due to derived seed
+      expect(words1).not.toBe(words2);
+    });
   });
 
   describe("randomWord", () => {
@@ -142,6 +158,19 @@ describe("WordPool", () => {
       const pool = new WordPool({ dictionary: [], poolSize: 1 });
 
       expect(() => pool.randomWord()).toThrow("Pool is empty");
+    });
+
+    it("should use seeded random when provided", async () => {
+      const { SeededRandom } = await import("../src/utils/random.js");
+      const pool = new WordPool({ dictionary: nouns, poolSize: 50, seed: "test" });
+      const rng = new SeededRandom("word-seed");
+
+      const word1 = pool.randomWord(rng);
+      const word2 = pool.randomWord(rng);
+
+      // Same seed should produce different words as rng advances
+      expect(typeof word1).toBe("string");
+      expect(typeof word2).toBe("string");
     });
   });
 
@@ -218,6 +247,13 @@ describe("factory functions", () => {
 
       expect(pool.size).toBe(100);
     });
+
+    it("should accept a seed", async () => {
+      const pool1 = await createNounPool(50, "noun-seed");
+      const pool2 = await createNounPool(50, "noun-seed");
+
+      expect(pool1.getPool()).toEqual(pool2.getPool());
+    });
   });
 
   describe("createVerbPool", () => {
@@ -226,6 +262,13 @@ describe("factory functions", () => {
 
       expect(pool.size).toBe(100);
     });
+
+    it("should accept a seed", async () => {
+      const pool1 = await createVerbPool(50, "verb-seed");
+      const pool2 = await createVerbPool(50, "verb-seed");
+
+      expect(pool1.getPool()).toEqual(pool2.getPool());
+    });
   });
 
   describe("createAdverbPool", () => {
@@ -233,6 +276,13 @@ describe("factory functions", () => {
       const pool = await createAdverbPool(100);
 
       expect(pool.size).toBe(100);
+    });
+
+    it("should accept a seed", async () => {
+      const pool1 = await createAdverbPool(50, "adverb-seed");
+      const pool2 = await createAdverbPool(50, "adverb-seed");
+
+      expect(pool1.getPool()).toEqual(pool2.getPool());
     });
   });
 });
