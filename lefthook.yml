@@ -1,0 +1,22 @@
+min_version: 1.0.0
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm commitlint --edit {1}
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: "*.{js,ts,jsx,tsx}"
+      run: pnpm lint --fix {staged_files}
+      stage_fixed: true
+
+pre-push:
+  jobs:
+    - name: test
+      run: pnpm test
+
+    - name: typecheck
+      run: pnpm tsc --noEmit

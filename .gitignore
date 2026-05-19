@@ -141,3 +141,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# WordNet source files (downloaded for extraction)
+wordnet.tar.gz
+dict/
