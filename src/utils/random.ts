@@ -54,6 +54,7 @@ export class SeededRandom {
 
     const index = this.nextInt(0, array.length);
 
+    // eslint-disable-next-line security/detect-object-injection -- index is bounded by array.length
     return array[index] as T;
   }
 
@@ -80,6 +81,7 @@ export function secureRandomElement<T>(array: readonly T[]): T {
 
   const index = secureRandomInt(0, array.length);
 
+  // eslint-disable-next-line security/detect-object-injection -- index is bounded by array.length
   return array[index] as T;
 }
 

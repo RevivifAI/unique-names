@@ -63,6 +63,7 @@ export function generate(options: UniqueNameOptions = {}): string {
   const words: string[] = [];
 
   for (let i = 0; i < length; i++) {
+    // eslint-disable-next-line security/detect-object-injection -- i is bounded by length
     const dict = dictionaries[i];
 
     if (!dict || dict.length === 0) {
@@ -156,6 +157,7 @@ function generateToken(options: TokenOptions, random: null | SeededRandom): stri
     for (let i = 0; i < length; i++) {
       const index = random.nextInt(0, charSet.length);
 
+      // eslint-disable-next-line security/detect-object-injection -- index bounded by charSet
       token = `${token}${charSet[index]}`;
     }
   } else {
@@ -170,6 +172,7 @@ function generateToken(options: TokenOptions, random: null | SeededRandom): stri
 
       const index = byteValue % charSet.length;
 
+      // eslint-disable-next-line security/detect-object-injection -- index bounded via modulo
       token = `${token}${charSet[index]}`;
     }
   }
