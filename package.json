@@ -1,15 +1,48 @@
 {
   "name": "@revivifai/unique-names",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Generate unique, memorable names using WordNet dictionaries",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./generator": {
+      "import": "./dist/generator.js",
+      "types": "./dist/generator.d.ts"
+    },
+    "./word-pool": {
+      "import": "./dist/word-pool.js",
+      "types": "./dist/word-pool.d.ts"
+    },
+    "./dictionaries": {
+      "import": "./dist/dictionaries/index.js",
+      "types": "./dist/dictionaries/index.d.ts"
+    },
+    "./dictionaries/adjectives": {
+      "import": "./dist/dictionaries/adjectives.js",
+      "types": "./dist/dictionaries/adjectives.d.ts"
+    },
+    "./dictionaries/adverbs": {
+      "import": "./dist/dictionaries/adverbs.js",
+      "types": "./dist/dictionaries/adverbs.d.ts"
+    },
+    "./dictionaries/nouns": {
+      "import": "./dist/dictionaries/nouns.js",
+      "types": "./dist/dictionaries/nouns.d.ts"
+    },
+    "./dictionaries/verbs": {
+      "import": "./dist/dictionaries/verbs.js",
+      "types": "./dist/dictionaries/verbs.d.ts"
+    },
+    "./utils/random": {
+      "import": "./dist/utils/random.js",
+      "types": "./dist/utils/random.d.ts"
     }
   },
   "files": [

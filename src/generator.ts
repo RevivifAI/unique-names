@@ -3,7 +3,6 @@
  */
 import type { TokenOptions, UniqueNameOptions } from "./types.js";
 
-import { adjectives, nouns } from "./dictionaries/index.js";
 import { secureRandomElement, secureRandomInt, SeededRandom } from "./utils/random.js";
 
 const HEX_CHARS = "0123456789abcdef";
@@ -17,8 +16,12 @@ const NUMERIC_CHARS = "0123456789";
  *
  * @example
  * ```typescript
- * // Simple usage with defaults
- * const name = generate(); // e.g., "brave-tiger"
+ * import { generate, adjectives, nouns } from "@revivifai/unique-names";
+ *
+ * // Simple usage with dictionaries
+ * const name = generate({
+ *   dictionaries: [adjectives, nouns],
+ * }); // e.g., "brave-tiger"
  *
  * // Custom dictionaries and separator
  * const name = generate({
@@ -29,20 +32,26 @@ const NUMERIC_CHARS = "0123456789";
  *
  * // With token suffix
  * const name = generate({
+ *   dictionaries: [adjectives, nouns],
  *   token: { length: 4, type: 'numeric' }
  * }); // e.g., "brave-tiger-4829"
  *
  * // Deterministic output with seed
- * const name = generate({ seed: 'my-seed' }); // Always same result
+ * const name = generate({
+ *   dictionaries: [adjectives, nouns],
+ *   seed: 'my-seed'
+ * }); // Always same result
  * ```
  */
-export function generate(options: UniqueNameOptions = {}): string {
+export function generate(options: UniqueNameOptions): string {
   const {
-    dictionaries = [
-      adjectives,
-      nouns,
-    ], length = 2, seed, separator = "-", style = "lowercase", token,
+    dictionaries, length = 2, seed, separator = "-", style = "lowercase", token,
   } = options;
+
+  // Validate dictionaries
+  if (!dictionaries || dictionaries.length === 0) {
+    throw new Error("dictionaries must be a non-empty array");
+  }
 
   // Validate length
   if (length < 1) {
@@ -88,10 +97,28 @@ export function generate(options: UniqueNameOptions = {}): string {
  *
  * @param options - Configuration options for name generation.
  * @returns Generated haiku-style name string.
+ *
+ * @example
+ * ```typescript
+ * import { haikunate, adjectives, nouns } from "@revivifai/unique-names";
+ *
+ * // With dictionaries
+ * const name = haikunate({
+ *   dictionaries: [adjectives, nouns],
+ * }); // e.g., "winter-forest-4829"
+ *
+ * // Custom configuration
+ * const custom = haikunate({
+ *   dictionaries: [adjectives, nouns],
+ *   separator: ".",
+ *   style: "capital",
+ *   token: { length: 6, type: "hex" },
+ * }); // e.g., "Silent.Moon.3f2a8b"
+ * ```
  */
-export function haikunate(options: Partial<UniqueNameOptions> = {}): string {
+export function haikunate(options: Partial<UniqueNameOptions>): string {
   const config: UniqueNameOptions = {
-    dictionaries: [adjectives, nouns],
+    dictionaries: options.dictionaries ?? [],
     separator: options.separator ?? "-",
     style: options.style ?? "lowercase",
     token: options.token ?? { length: 4, type: "numeric" },
@@ -99,6 +126,10 @@ export function haikunate(options: Partial<UniqueNameOptions> = {}): string {
 
   if (options.seed !== undefined) {
     config.seed = options.seed;
+  }
+
+  if (!config.dictionaries || config.dictionaries.length === 0) {
+    throw new Error("haikunate requires dictionaries to be provided");
   }
 
   return generate(config);

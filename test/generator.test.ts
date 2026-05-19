@@ -10,20 +10,20 @@ import {
 describe("generate", () => {
   describe("default behavior", () => {
     it("should generate a name with two words", () => {
-      const name = generate();
+      const name = generate({ dictionaries: [adjectives, nouns] });
       const parts = name.split("-");
 
       expect(parts.length).toBeGreaterThanOrEqual(2);
     });
 
     it("should use hyphen as default separator", () => {
-      const name = generate();
+      const name = generate({ dictionaries: [adjectives, nouns] });
 
       expect(name).toContain("-");
     });
 
     it("should use lowercase by default", () => {
-      const name = generate();
+      const name = generate({ dictionaries: [adjectives, nouns] });
 
       expect(name).toBe(name.toLowerCase());
     });
@@ -71,6 +71,18 @@ describe("generate", () => {
 
     it("should use WordNet adverbs dictionary", () => {
       expect(adverbs.length).toBeGreaterThan(1000);
+    });
+
+    it("should throw when dictionaries is missing", () => {
+      expect(() =>
+        generate({})).toThrow(
+        "dictionaries must be a non-empty array",
+      );
+    });
+
+    it("should throw when dictionaries is empty", () => {
+      expect(() =>
+        generate({ dictionaries: [] })).toThrow("dictionaries must be a non-empty array");
     });
   });
 
@@ -170,7 +182,7 @@ describe("generate", () => {
 
   describe("seed", () => {
     it("should produce same result with same seed (number)", () => {
-      const options = { seed: 12345 };
+      const options = { dictionaries: [adjectives, nouns] as const, seed: 12345 };
       const name1 = generate(options);
       const name2 = generate(options);
 
@@ -178,7 +190,7 @@ describe("generate", () => {
     });
 
     it("should produce same result with same seed (string)", () => {
-      const options = { seed: "my-seed-value" };
+      const options = { dictionaries: [adjectives, nouns] as const, seed: "my-seed-value" };
       const name1 = generate(options);
       const name2 = generate(options);
 
@@ -186,15 +198,15 @@ describe("generate", () => {
     });
 
     it("should produce different results with different seeds", () => {
-      const name1 = generate({ seed: 12345 });
-      const name2 = generate({ seed: 67890 });
+      const name1 = generate({ dictionaries: [adjectives, nouns], seed: 12345 });
+      const name2 = generate({ dictionaries: [adjectives, nouns], seed: 67890 });
 
       expect(name1).not.toBe(name2);
     });
 
     it("should produce deterministic output for all operations", () => {
       const options = {
-        dictionaries: [adjectives, nouns, verbs],
+        dictionaries: [adjectives, nouns, verbs] as const,
         length: 3,
         seed: "deterministic-test",
         token: { length: 6, type: "numeric" as const },
@@ -283,7 +295,7 @@ describe("generate", () => {
 
 describe("haikunate", () => {
   it("should generate haiku-style name with 4-digit token", () => {
-    const name = haikunate();
+    const name = haikunate({ dictionaries: [adjectives, nouns] });
     const parts = name.split("-");
 
     expect(parts.length).toBe(3);
@@ -292,6 +304,7 @@ describe("haikunate", () => {
 
   it("should accept custom options", () => {
     const name = haikunate({
+      dictionaries: [adjectives, nouns],
       separator: "_",
       style: "uppercase",
     });
@@ -301,7 +314,7 @@ describe("haikunate", () => {
   });
 
   it("should support deterministic output", () => {
-    const options = { seed: "haiku-seed" };
+    const options = { dictionaries: [adjectives, nouns] as const, seed: "haiku-seed" };
     const name1 = haikunate(options);
     const name2 = haikunate(options);
 
@@ -310,6 +323,7 @@ describe("haikunate", () => {
 
   it("should allow overriding token", () => {
     const name = haikunate({
+      dictionaries: [adjectives, nouns],
       token: { length: 6, type: "hex" },
     });
     const parts = name.split("-");
@@ -319,10 +333,16 @@ describe("haikunate", () => {
 
   it("should allow disabling token", () => {
     const name = haikunate({
+      dictionaries: [adjectives, nouns],
       token: { length: 0 },
     });
     const parts = name.split("-");
 
     expect(parts.length).toBe(2);
+  });
+
+  it("should throw when dictionaries is missing", () => {
+    expect(() =>
+      haikunate({})).toThrow("haikunate requires dictionaries to be provided");
   });
 });

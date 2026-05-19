@@ -20,3 +20,13 @@ export type { NumberDictionaryOptions, TokenOptions, UniqueNameOptions } from ".
 
 // Random utilities (for advanced use)
 export { secureRandomElement, secureRandomInt, SeededRandom } from "./utils/random.js";
+// WordPool for memory-efficient word selection
+export {
+  createAdjectivePool,
+  createAdverbPool,
+  createNounPool,
+  createVerbPool,
+  WordPool,
+} from "./word-pool.js";
+
+export type { WordPoolOptions } from "./word-pool.js";
