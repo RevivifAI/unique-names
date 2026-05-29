@@ -57,7 +57,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "lefthook install",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "release": "pnpm publish --registry https://registry.npmjs.org/"
   },
   "keywords": [
     "unique",
@@ -79,6 +80,10 @@
     "url": "https://github.com/RevivifAI/unique-names/issues"
   },
   "homepage": "https://github.com/RevivifAI/unique-names#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
