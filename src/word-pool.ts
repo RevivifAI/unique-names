@@ -254,7 +254,9 @@ export class WordPool {
       const idxJ = indices.at(j);
 
       if (temp !== undefined && idxJ !== undefined) {
+        // eslint-disable-next-line security/detect-object-injection
         indices[i] = idxJ;
+        // eslint-disable-next-line security/detect-object-injection
         indices[j] = temp;
       }
     }
@@ -289,7 +291,9 @@ export class WordPool {
       const other = array.at(j);
 
       if (temp !== undefined && other !== undefined) {
+        // eslint-disable-next-line security/detect-object-injection
         array[i] = other;
+        // eslint-disable-next-line security/detect-object-injection
         array[j] = temp;
       }
     }
